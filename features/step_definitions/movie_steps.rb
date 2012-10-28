@@ -15,7 +15,8 @@ end
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.content  is the entire content of the page as a string.
-  flunk "Unimplemented"
+    assert page.body.index(e1) < page.body.index(e2) , "'#{e1}' should be before '#{e2}'"
+
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -55,6 +56,9 @@ Then /only the movies with the following ratings should be listed: (.*)/ do |rat
   end
 end
 
+Then /^the total number of movies returned should be at least (.*)/ do |c|
+  assert page.all(:css, "#movies tr").length-1 >= c.to_i, "Less than #{c} movies have been returned"
+end
 When /I select none of the ratings/ do
   step "I uncheck the following ratings: ALL"
 end
@@ -66,7 +70,7 @@ end
 Then /all ratings checkboxes should be checked/ do
   page.all(:css, "#ratings_form input").each do |e|
     if e["type"]=~/^checkbox$/i then
-      assert e["checked"], "#e{'id'} should be checked" 
+      assert e["checked"], "#{e['id']} should be checked" 
     end
   end
 end
@@ -75,6 +79,3 @@ When /I select all ratings/ do
   step "I check the following ratings: ALL"
 end
 
-Then /I should see '(.*)' before '(.*)'/ do |first,after|
-  assert page.body.index(first) < page.body.index(after) , "'#{first}' should be before '#{after}'"
-end

@@ -74,3 +74,7 @@ end
 When /I select all ratings/ do
   step "I check the following ratings: ALL"
 end
+
+Then /I should see '(.*)' before '(.*)'/ do |first,after|
+  assert page.body.index(first) < page.body.index(after) , "'#{first}' should be before '#{after}'"
+end

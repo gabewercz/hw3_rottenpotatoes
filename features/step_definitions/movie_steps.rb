@@ -44,7 +44,6 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
 end
 
 Then /only the movies with the following ratings should be listed: (.*)/ do |rating_list|
-  
   ratings = rating_list.split(/ *, */)
   page.all(:css, "#movies tr").each do |row|
     row_html = row.native.to_s
@@ -54,4 +53,24 @@ Then /only the movies with the following ratings should be listed: (.*)/ do |rat
       assert ratings.include?(rating), "Should not return movie with rating #{rating}"
     end 
   end
+end
+
+When /I select none of the ratings/ do
+  step "I uncheck the following ratings: ALL"
+end
+
+Then /I should see all of the movies/ do
+  assert page.all(:css, "#movies tr").length-1 == Movie.count, "It should be returning all the movies, but it's not"
+end
+
+Then /all ratings checkboxes should be checked/ do
+  page.all(:css, "#ratings_form input").each do |e|
+    if e["type"]=~/^checkbox$/i then
+      assert e["checked"], "#e{'id'} should be checked" 
+    end
+  end
+end
+
+When /I select all ratings/ do
+  step "I check the following ratings: ALL"
 end

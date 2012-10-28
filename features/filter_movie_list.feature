@@ -31,8 +31,12 @@ Scenario: restrict to movies with 'PG' or 'R' ratings
 		And I check the following ratings: PG, R
 		And I press "Refresh"
 	Then only the movies with the following ratings should be listed: PG, R 
+
 Scenario: no ratings selected
-  # see assignment
+  Wnen I select none of the ratings
+  Then I should see all of the movies
+  	And all ratings checkboxes should be checked
 
 Scenario: all ratings selected
-  # see assignment
+  Wnen I select all ratings
+  Then I should see all of the movies

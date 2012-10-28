@@ -4,8 +4,9 @@ Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
     # each returned element will be a hash whose key is the table header.
     # you should arrange to add that movie to the database here.
+    Movie.create!(movie)
   end
-  flunk "Unimplemented"
+  #flunk "Unimplemented"
 end
 
 # Make sure that one string (regexp) occurs before or after another one
@@ -25,4 +26,32 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   # HINT: use String#split to split up the rating_list, then
   #   iterate over the ratings and reuse the "When I check..." or
   #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
+  rating_list.split(/ *, */).each do |s|
+      if s=~/^all$/i then
+        #puts "all"
+        page.all(:css, "#ratings_form input").each do |e|
+          #puts "found input #{e.text}"
+          if e["type"]=~/^checkbox$/i then
+            step "I #{uncheck}check \"#{e['id']}\"" 
+          else
+            #puts "it's not a checkbox"
+          end
+        end
+      else
+        step "I #{uncheck}check \"#{'ratings_'+s}\""   
+      end
+  end
+end
+
+Then /only the movies with the following ratings should be listed: (.*)/ do |rating_list|
+  
+  ratings = rating_list.split(/ *, */)
+  page.all(:css, "#movies tr").each do |row|
+    row_html = row.native.to_s
+    if row_html =~ /<td>/m then
+      row_html =~ /<td>.*<\/td>.*<td>(.*)<\/td>.*<td>.*<\/td>.*<td>.*<\/td>/m
+      rating = $1.strip
+      assert ratings.include?(rating), "Should not return movie with rating #{rating}"
+    end 
+  end
 end
